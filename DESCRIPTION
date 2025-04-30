@@ -19,7 +19,7 @@ Description: Provides S4 classes for Internet Protocol (IP) versions 4 and 6 add
 License: GPL (>= 2)
 SystemRequirements: libidn: libidn11-dev (deb)
 NeedsCompilation: yes
-Depends: R (>= 3.5.0), methods
+Depends: R (>= 4.1.0), methods
 Imports: stringi
 Suggests: knitr
 VignetteBuilder: knitr
