@@ -1,7 +1,8 @@
 Package: IP
 Type: Package
 Title: Classes and Methods for 'IP' Addresses
-Version: 0.1.4
+Version: 0.1.5
+Date: 2025-04-30
 Authors@R: 
     c(person(
     given = "Thomas"
