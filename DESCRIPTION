@@ -17,7 +17,7 @@ Authors@R:
 Author: Thomas Soubiran [aut],
     Rucknium [cre] (ORCID: <https://orcid.org/0000-0001-5999-8950>)
 Maintainer: Rucknium <Rucknium@protonmail.com>
-Description: Provides S4 classes for Internet Protocol (IP) versions 4 and 6 addresses and efficient methods for 'IP' addresses comparison, arithmetic, bit manipulation and lookup. Both 'IPv4' and 'IPv6' arbitrary ranges are also supported as well as internationalized (IDN) domain lookup with and 'whois' query.
+Description: Provides S4 classes for Internet Protocol (IP) versions 4 and 6 addresses and efficient methods for 'IP' addresses comparison, arithmetic, bit manipulation and lookup. Both 'IPv4' and 'IPv6' arbitrary ranges are also supported as well as internationalized ('IDN') domain lookup with and 'whois' query.
 License: GPL (>= 2)
 BugReports: https://github.com/Rucknium/IP/issues
 SystemRequirements: libidn: libidn11-dev (deb)
