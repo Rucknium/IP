@@ -75,4 +75,4 @@ but this range still belongs to the ARIN address space.
 
 ## Further reading
 
-Please look [here](https://numa.hypotheses.org/?p=2694) for more examples.
+Please look [here](https://web.archive.org/web/20250324112716/https://numa.hypotheses.org/2694) for more examples.
