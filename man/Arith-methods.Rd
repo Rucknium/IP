@@ -15,6 +15,7 @@
 %%
 \alias{+,IPv4,IPv4-method}
 \alias{+,IPv4,integer-method}
+\alias{+,IPv4,logical-method}
 \alias{+,IPv4,numeric-method}
 %%
 \alias{-,IPv4,missing-method}
@@ -36,6 +37,11 @@
 \alias{Arith,IP,IP-method}
 \alias{Arith,IP,.__intFP__.-method}
 %%
+%%
+%%
+% \alias{+,IPv4r,IPv4r-method}
+% \alias{+,IPv4r,IPv4-method}
+\alias{+,IPv4r,integer-method}
 %%
 %%
 \title{ Methods for IP arithmetic }
@@ -68,10 +74,11 @@
   %% 
   %% 
   Operations are currently not always commutative. IP*-IP* are but those involving integers or floats are not. %%
-  Thus, adding (or subtracting) an IP* to an integer or a float will cause an "undefined behavior" (see example below and the caveat section in the package description).
+  Thus, adding (or subtracting) an integer or a float to an IP* object will work but the reverse (adding (or subtracting) an IP* to an integer or a float) will raise an error (see example below and the caveat section in the package description). 
+  In addition multiplication and division are not implemented and will raise an error. 
   %% loss of precision
   %%
-  Arithmetic operations involving IP* are better done using the available RIP methods.%%, especially for IPv6 addresses. %%
+  Arithmetic operations involving IP* are better done using methods provided.%%, especially for IPv6 addresses. %%
   Both IPv4 and IPv6 addresses are represented as unsigned integers but \R only works with 32 bits signed integers.
   In addition, double precision numbers cannot represent all integers in the 0-(2^128-1) range. Therefore, converting an IPv6 object to numeric may cause a loss of precision and the same applies to arithmetic operations on IPv6 represented as floating point numbers.
   
@@ -85,6 +92,17 @@
 ipv4("192.0.0.1") + 1
 ipv6("fd00::1") + 1
 ip(c("192.0.0.1", "fd00::1")) + 1
+
+##
+## Prohibited Arith operations
+##
+## this raises an error 
+tryCatch(1L - ipv4("192.0.0.1"), error=function(e) e )
+## and so will 
+tryCatch(1 + ipv6("fd00::1"), error=function(e) e )
+## as well as
+tryCatch(ipv4("192.0.0.1") * 2, error=function(e) e )
+
 ##
 ## Loss of precision in arithmetical operations
 ##
@@ -94,7 +112,7 @@ ip(c("192.0.0.1", "fd00::1")) + 1
 identical((2^64 +1)- 2^64  , 0 )
 ## ...and so on
 ( (2^64 + 2^11 ) - (2^64))
-## next representable number with IEEE 754 double precision float; mind the gap
+## next representable number with IEEE 754 double precision floats; mind the gap
 ( (2^64 + 2^12 ) - (2^64))
 % ##
 % ( (2^64 + (2^12-1) )- (2^64))
@@ -103,9 +121,5 @@ identical((2^64 +1)- 2^64  , 0 )
 ##
 (x <- ( ( ipv6('::1') \%<<\% 64L ) + ( ipv6('::1') \%<<\% 11L ) ) - ( ipv6('::1') \%<<\% 64L ) )
 log2(as.numeric(x))
-## Undefined behavior, raises an error in this case
-\dontrun{
-1L - ipv4("192.0.0.1")
-}
 }
 

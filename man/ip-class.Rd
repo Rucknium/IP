@@ -49,9 +49,12 @@
 %%
 \alias{ip,missing,missing-method}
 \alias{ip,IPv4,IPv6-method}
+\alias{ip,IPv4,missing-method}
+\alias{ip,IPv6,missing-method}
 \alias{ip,character,missing-method}
 \alias{ip,integer,missing-method}
 \alias{ip,list,missing-method}
+\alias{ip,logical,missing-method}
 %%
 \alias{ip,IPr,missing-method}
 \alias{ip,host,missing-method}
@@ -78,7 +81,12 @@
 %%
 \alias{[<-,IPv4,.__subscript__.-method}
 \alias{[<-,IPv6,.__subscript__.-method}
+%%
+\alias{[<-,IP,ANY,ANY,ANY-method}
 \alias{[<-,IP,.__subscript__.-method}
+\alias{[<-,IP,.__subscript__.,ANY,IPv4-method}
+\alias{[<-,IP,.__subscript__.,ANY,IPv6-method}
+\alias{[<-,IP,.__subscript__.,ANY,logical-method}
 %%
 %%
 %% is.cdr
@@ -109,6 +117,11 @@
 \alias{[<-,IP,.__subscript__.,ANY,IP-method}
 \alias{[<-,IP,.__subscript__.,ANY,ANY-method}
 %%
+%%
+%%
+\alias{[[-method}
+%%
+\alias{[[,.__IPvr__.,.__subscript__.-method}
 % \alias{IP-class}
 % \alias{[,IP,subset.idx-method}
 % \alias{[<-,IP,subset.idx,ANY,IPv4-method}
@@ -136,7 +149,7 @@
 \alias{names<-.IPv6}
 \alias{names<-.IP}
 %%
-%% 
+%% TODO: mv to Conversion
 %%
 \alias{as.data.frame-method}
 %%
@@ -149,20 +162,22 @@
 % \alias{c}
 %%
 \alias{c.IPv4}
-%%
 \alias{c.IPv6}
-%%
-% \alias{c.IPr}
+\alias{c.IP}
 %%
 %% rbind2
 %%
 \alias{rbind2-method}
 %%
 \alias{rbind2,IPv4,IPv4-method}
-%%
 \alias{rbind2,IPv6,IPv6-method}
-%%
 \alias{rbind2,IP,IP-method}
+%%
+%%
+%%
+\alias{rep.IPv4}
+\alias{rep.IPv6}
+\alias{rep.IP}
 %%
 %%
 %%
@@ -257,7 +272,7 @@
 % }%%
 \details{
   %%
-  IPv4 and IPv6 objects are created either from a character string or integer vector through \code{ipv4()} and \code{ipv6()} calls.
+  IPv4 and IPv6 objects are created either from either character strings or integer vectors through \code{ipv4()} and \code{ipv6()} calls.
   
   %%
   IP objects store both IPv4 and IPv6 addresses. IP are created either from a character string or from IPv4 and IPv6 objects through \code{ip()} calls. 
@@ -274,37 +289,61 @@
   Note that in order to avoid undesirable side-effects, \code{is.numeric()} returns \code{FALSE}
 }
 %%
+\note{
+  \code{ipv4()} uses the SIMD SSE instructions set to input IPv4 addresses if the IP package was compiled with the \code{"--enable-avx2"} flag.
+}
+%%
 \examples{
-  ##
-  ipv4("0.0.0.0")==ipv4(0L)
-  ##
-  ipv6("::")==ipv6(0L)
-  ##
-  ip.strings <- c(v4 = "192.0.0.1", v6 = "fd00::1" )
-  ##
-  (ip4 <- ipv4(ip.strings))
-  ##
-  (ip6 <- ipv6(ip.strings))
-  ##
-  (ip <- ip(ip.strings))
-  ##
-  all(ip==ip(ip4, ip6))
-  ##
-  pnet0 <- data.frame(
-    ip 
-    , v = ip.version(ip)
-  )
-  ##
-  pnet1 <- rbind(
-    pnet0
-    , within(pnet0, ip <- ip+1L)
-  )
-  ##
-  pnet0==pnet1[1:2,] 
-  ## fails (why?): 
-  identical(pnet0,pnet1[1:2,])
-  ##
-  ##
-  ip(ip4[1],ip6[2],append=TRUE)
+##
+ipv4("0.0.0.0")==ipv4(0L)
+##
+ipv6("::")==ipv6(0L)
+## create an empty object
+ip0    <- ip()
+## grow it
+ip0[3] <- ipv4(3L)
+ip0[5] <- ipv6(5L)
+ip0
+## same thing with NA
+ip0    <- ip()
+ip0[2] <- NA
+ip0
+## private networks
+ip.strings <- c(v4 = "192.0.0.1", v6 = "fd00::1" )
+##
+(ip4 <- ipv4(ip.strings))
+##
+(ip6 <- ipv6(ip.strings))
+##
+(ip <- ip(ip.strings))
+##
+all(ip==ip(ip4, ip6))
+##
+pnet0 <- data.frame(
+  ip 
+  , v = ip.version(ip)
+)
+##
+pnet1 <- rbind(
+  pnet0
+  , within(pnet0, ip <- ip+1L)
+)
+##
+pnet0==pnet1[1:2,] 
+## fails (why?): 
+identical(pnet0,pnet1[1:2,])
+##
+ip(ip4[1],ip6[2],append=TRUE)
+##
+## IPv6 transition mechanism
+##
+## IPv4-mapped Address
+(ip6 <- ipv6("::ffff:c000:0280"))==ipv6("::ffff:192.0.2.128")
+##
+ipv6.reserved()[ip.index(ipv6.reserved())(ip6)]
+## NAT64 IPv4-IPv6 translation
+(ip6 <- ipv6("64:ff9b::c000:201") ) & ipv6.hostmask(96)
+##
+ipv6.reserved()[ip.index(ipv6.reserved())(ip6)]
 }
 

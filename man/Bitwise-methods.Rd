@@ -181,50 +181,62 @@
 %%
 %%
 \examples{
-    ##
-    private.network <- ipv4r("192.0.0.0/16")
-    ##
-    (mask.len <- ceiling(log2(ip.range(private.network))))
-    ##
-    ip <- ipv4("192.168.1.1") 
-    ##
-    (netmask <- ipv4.netmask(mask.len))
-    ##
-    ip & netmask
-    ##
-    (hostmask <- ipv4.hostmask(mask.len))
-    ##
-    ip & hostmask
-    ##
-    ((ip & netmask) | (ip & hostmask) )==ip
-    ## 2 complement
-    ((!ip) + 1L)==-ip
-    ##
-    ipv4('0.0.0.2') \%>>\% 1L
-    ##
-    ipv4('0.0.0.2') \%<<\% 1L
-    ##
-    ## branchless swap
-    ##
-    ipv4.ifelse <- function(test, yes, no){
-      ## 
-      if( ( class(yes)!='IPv4' ) | ( class(no)!='IPv4' ) ) stop('both arguments should be of class IPv4')
-      ##
-      ip.xor(
-        no
-        , ip.xor(
-          no, yes
-        ) & -(ipv4(test)) ## mask
-      )
-    }
-    ##
-    x <- ipv4('192.168.0.0') + 1:5
-    ## recycling without warning (yet)
-    y <- x + c(1,-1)
-    ##
-    test <- x < y
-    ##
-    data.frame(
-      x, y, test, res= ipv4.ifelse(test , x,y)
-    )
+##
+private.network <- ipv4r("192.0.0.0/16")
+##
+(mask.len <- ceiling(log2(ip.range(private.network))))
+##
+ip <- ipv4("192.168.1.1") 
+##
+(netmask <- ipv4.netmask(mask.len))
+##
+ip & netmask
+##
+(hostmask <- ipv4.hostmask(mask.len))
+##
+ip & hostmask
+##
+((ip & netmask) | (ip & hostmask) )==ip
+## 2 complement
+((!ip) + 1L)==-ip
+##
+ipv4('0.0.0.2') \%>>\% 1L
+##
+ipv4('0.0.0.2') \%<<\% 1L
+##
+## branchless swap
+##
+ipv4.ifelse <- function(test, yes, no){
+  ## 
+  if( ( class(yes)!='IPv4' ) | ( class(no)!='IPv4' ) ){
+    stop('both arguments should be of class IPv4')
+  }
+  ##
+  ip.xor(
+    no
+    , ip.xor(
+      no, yes
+    ) & -(ipv4(test)) ## mask
+  )
+}
+##
+x <- ipv4('192.168.0.0') + 1:5
+## recycling without warning (yet)
+y <- x + c(1,-1)
+##
+test <- x < y
+##
+data.frame(
+  x, y, test, res= ipv4.ifelse(test , x,y)
+)
+##
+##
+##
+ip6 <- ipv6("2606:2800:220:1:248:1893:25c8:1946")
+## Unicast addresses global routing prefix
+ip6 & ipv6.netmask(48)
+## Subnet ID
+ip6 & (ipv6.hostmask(128-16) \%<<\% 64L)
+## Interface ID 
+ip6 & ipv6.hostmask(64)
 }

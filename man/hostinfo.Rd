@@ -8,14 +8,22 @@
 %%
 %%
 \alias{host-class}
-%%
-% \alias{host.info-class}
+\alias{idn}
 %%
 %%
 %%
 \alias{host}
+\alias{host-methods}
+%%
+\alias{host,character-method}
+%%
+\alias{host,IPv4-method}
+\alias{host,IPv6-method}
+\alias{host,IP-method}
 %% 
 \alias{show,host-method}
+%% 
+\alias{names.host}
 %%
 %%
 %%
@@ -25,6 +33,7 @@
 \alias{host.info,IPv4-method}
 \alias{host.info,IPv6-method}
 \alias{host.info,IP-method}
+\alias{host.info,host-method}
 %%
 % \alias{ipv4-method}
 \alias{ipv4,host-method}
@@ -35,6 +44,11 @@
 %%
 %%
 \alias{localhost.ip}
+%%
+%%
+%%
+\alias{toIdna}
+\alias{fromIdna}
 %%
 %%
 %%
@@ -57,6 +71,8 @@
 %%
 \alias{ipv4.recovered}
 %%
+\alias{ipv6.unicast}
+%%
 %%
 %%
 \alias{whois}
@@ -70,24 +86,30 @@
 \title{ host-info }
 %%
 \description{
-  Methods for querying informations about hosts (DNS) or IP (address spaces)
+  Methods for querying information about hosts (DNS) or IP (address spaces)
 }
 %%
 %% 
 %%
 \usage{
   %% 
-  host(object,\dots)
+  host(host,\dots)
+  %% 
+  host(host,\dots)
   %% 
   host.info(host,\dots)
   %% 
   localhost.ip(\dots)
   %% 
+  toIdna(domain, flags)
+  %% 
+  fromIdna(domain, flags)
+  %% 
   fqdn(hostname) 
   %%
   is.fqdn(hostname)
   %%
-  whois(domain, referer , output, verbose)
+  whois(domain, refer , output, verbose)
   %%  
   rir.names() 
   %%
@@ -99,7 +121,13 @@
   %%
   ipv6.addr.space()
   %%
+  ipv4.reserved()
+  %%
+  ipv6.reserved()
+  %%
   ipv4.recovered()
+  %%
+  ipv6.unicast()
 }
 %%
 \arguments{
@@ -110,9 +138,9 @@
   % \item{host.info}{
     % either a vector string or an IPv4, IPv6, IP address
   % }
-  \item{object}{
-    a character vector of domain names
-  }
+  % \item{object}{
+    % a character vector of domain names
+  % }
   %%
   \item{\dots}{
     further arguments. Only host.info (default:FALSE) for host() at the moment
@@ -126,12 +154,16 @@
     A character vector of domain names
   }  
   %%
-  \item{referer}{
+  \item{flags}{
+    Flags for IDNA conversion. "IDNA_DEFAULT": default behavior, "IDNA_ALLOW_UNASSIGNED": allow processing of unassigned Unicode code points, "IDNA_USE_STD3_ASCII_RULES": check output to make sure it is a STD3 conforming host name.
+  }  
+  %%
+  \item{refer}{
     An optional referrer to be queried
   } 
   %%
   \item{output}{
-    An integer specifying whether to returns the raw response from the referrer (0) or a parsed key-value named vector (1). The latter is still experimental due to the heterogeneity of responses.
+    An integer specifying whether to return the raw response from the referrer (0) or parse the response and return a key-value named vector (1). The latter is still experimental due to the heterogeneity of responses.
   } 
   %%
   \item{verbose}{
@@ -143,13 +175,14 @@
 %%
 \details{
   %%
-  \subsection{Methods et functions for querying informations about hosts}{
+  \subsection{Methods and functions for querying informations about hosts}{
   %%
   \itemize{
     %%
-    \item \code{host()} takes a character vector of domain names as arguments for DNS lookup. Addresses can be extracted with the corresponding methods (ipv4(), ipv6(), ip())
+    \item \code{host()} takes a character vector of domain names as arguments for DNS lookup. Addresses can be extracted with the corresponding methods (ipv4(), ipv6(), ip()). 
+    Also takes either IPv4, IPv6 or IP objects for reverse DNS lookup and returns the corresponding domain name (or NA if not found).
     %%
-    \item \code{host.info()} takes either IPv4, IPv6 or IP objects for reverse DNS lookup and returns the corresponding domain name (or NA if not found)
+    \item \code{host.info()} (depreciated) takes either IPv4, IPv6 or IP objects for reverse DNS lookup and returns the corresponding domain name (or NA if not found)
     %%
     \item \code{localhost.ip()} retrieves the host's interfaces IP adresses
     %%
@@ -160,16 +193,17 @@
     \item \code{whois()} queries \code{whois} databases for a vector of fully qualified domain names. 
   }
   %%
-  Since \code{host()}, \code{host.info()} and \code{localhost.ip()} need  OS specific system call, they are only available for \bold{POSIX compliant OS} at the moment.
+  Since \code{localhost.ip()} needs OS specific system call ---as well as \code{host()} and \code{host.info()}---, this function is only available for \bold{POSIX compliant OS} at the moment. 
+  Support of Internationalized Domain Names (IDN) also depends on the system's libraries. For instance, glibc supports IDN starting with version 2.3.4. Use the \code{toIdna()} function to ensure proper domain names encoding. Note that result may differ depdending on the flag argument as shown in the examples.
   %%
   In addition, the \code{host()} and \code{host.info()} methods are still \bold{very experimental} and might change in the future.
   
   %%
-  \code{whois} databases typically contain informations such as registrars' names \ldots %
+  \code{whois} databases typically contain information such as registrars' names \ldots %
   Note that responses are not standardized at all and may require an ad hoc parser. %  nuts-and-bolts unmaintainable 
   This is why the \code{whois()} function returns either a (still buggy at the moment) named vector of key-value pairs or the raw responses from the referrers.
   %%
-  The relevant referrer url can be determined automatically (default) or passed as an argument.
+  The relevant referrer \code{url} can be determined automatically (default) or passed as an argument.
   }
   %%
   %% bold
@@ -226,7 +260,7 @@
 %%
 \value{
   %%
-  \item{host}{an host object}
+  \item{host}{an host object or a character vector}
   %%
   \item{host.info}{a character vector}
   %%
@@ -236,51 +270,82 @@
 %%
 %%
 \examples{
-  ##
-  \dontrun{
-  host.info(
-    ipv4(
-      c("127.0.0.1")
-    )
+##
+\donttest{
+host(
+  ipv4(
+    c("127.0.0.1")
   )
-  }
-  \dontrun{
-  ##
-  h <- host(c(
-    "icann.org", "iana.org"
-  ))
-  ##
-  host.info(ipv4(h))
-  }
-  \dontrun{
-  ## French country-code top-level domains (ccTLD)
-  tld <- whois(
-    c(
-      "fr", "re", "tf", "wf", "pm", "yt"
-      , "nc", "mq", "gp", "gf", "pf"
-    ), verbose = 1
+)
+##
+h <- host(c(
+  "icann.org", "iana.org"
+))
+##
+host(ipv4(h))
+##
+## Domain names internationalization
+##
+##
+## results may vary according to the (POSIX) platform
+host(c("bucher.de", "Bücher.de"))
+}
+##
+if( ip.capabilities()["IDN"] ){
+  ## 
+  dn <- c( 
+    enc2utf8("bücher.de") ## ensure UTF-8
+    ## cannot input emoji with Latex 
+    , "\U1f4a9" # or alternatively: rawToChar(as.raw(c(0xf0, 0x9f, 0x92, 0xa9, 0x2e, 0x6c, 0x61)))
   )
   ##
-  sapply(tld, function(x)x['organisation'])
-  }
-  \dontrun{
+  Encoding(dn) <- "UTF-8"
   ##
+  dn
+  ## enforce internationalization with different options
+  flags <-rep( c( "IDNA_DEFAULT" , "IDNA_ALLOW_UNASSIGNED"), each = length(dn))
   ##
+  dni <- toIdna( dn, flags)
+  ## convert back
+  fromIdna(dni, flags)
+\donttest{
   ##
-  rhost     <- host('r-project.org')
-  ## hostname       : "cran.wu-wien.ac.at"
-  rhost.hnm <- host.info(ipv4(rhost))
-  ## primary domain : "ac.at"
-  fqdn(rhost.hnm)
-  ## ARIN 
-  ipv4.rir()[ip.match(ipv4(rhost), ipv4.rir())]
-  ##
-  ip.match(ipv4(rhost), ipv4.recovered())
-  ## domain name info 
-  rdom.wh   <- whois('r-project.org', output=1)
-  ## "AT"
-  rdom.wh[['r-project.org']]['Registrant Country']
-  ## host
-  rhost.wh0 <- whois(ipv4(rhost),verbose = 2, output=1)
-  }
+  host(dni)
+}
+}
+##
+\donttest{
+##
+## French country-code top-level domains (ccTLD)
+##
+tld <- whois(
+  c(
+    "fr", "re", "tf", "wf", "pm", "yt"
+    , "nc", "mq"##, "gp", "gf"
+    , "pf"
+  )
+  , verbose = 1 ## be a little verbose
+  , output = 1 ## output key-value pairs
+)
+##
+sapply(tld, function(x) x[names(x)=="whois"])
+##
+## R related info
+##
+rhost     <- host('r-project.org')
+## hostname       : "cran.wu-wien.ac.at"
+rhost.hnm <- host.info(ipv4(rhost))
+## primary domain : "ac.at"
+fqdn(rhost.hnm)
+## ARIN 
+ipv4.rir()[ip.match(ipv4(rhost), ipv4.rir())]
+##
+ip.match(ipv4(rhost), ipv4.recovered())
+## domain name info 
+rdom.wh   <- whois('r-project.org', output=1)
+## "AT"
+rdom.wh[['r-project.org']]['Registrant Country']
+## host
+rhost.wh0 <- whois(ipv4(rhost),verbose = 2, output=1)
+}
 }

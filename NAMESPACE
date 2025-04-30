@@ -1,7 +1,7 @@
 ##
 ##
 ##
-useDynLib(RIP)
+useDynLib(IP)
 ##
 ##
 ##
@@ -17,26 +17,23 @@ importFrom(
 )
 ##
 importFrom(
-  "stringr"
-  , str_match
+  "stringi"
+  , stri_match
 )
 ##
 ##
 ##
 export(
   ##
-#   "rbind.IPr",
+  "ip.capabilities",
   ##
-  "c.IPv4",
-  "c.IPv4r",
-  "c.IPv6",
-  "c.IPv6r",
-  ##"names", "names<-",
+  ## "names", "names<-",
   ##
   "names.IPv4"  , "names.IPv4r",
   "names<-.IPv4", "names<-.IPv4r",
   "names.IPv6"  , "names.IPv6r",
   "names<-.IPv6", "names<-.IPv6r",
+  "names.host", 
   ## 
   "names.IP" , "names.IPr", 
   "names.IPr", "names<-.IPr",
@@ -44,19 +41,40 @@ export(
   "format.IPv4", "format.IPv4r",
   "format.IPv6", "format.IPv6r",
   "format.IP", "format.IPr",
+  "format.host", 
   ##
   "toString.IPv4", "toString.IPv4r",
   "toString.IPv6", "toString.IPv6r",
   "toString.IP", "toString.IPr",
+  "toString.host", 
   ##
   "as.data.frame.IPv4","as.data.frame.IPv4r",
   "as.data.frame.IPv6","as.data.frame.IPv6r",
   "as.data.frame.IP","as.data.frame.IPr",
+  ## as.list.IPv4
+  ##
+#   "rbind.IPr",
+  ##
+  "c.IPv4",
+  "c.IPv4r",
+  "c.IPv6",
+  "c.IPv6r",
+  "c.IP",
+  "c.IPr",
+  ##
+  "rep.IPv4", 
+  "rep.IPv4r", 
+  "rep.IPv6", 
+  "rep.IPv6r", 
+  "rep.IP", 
+  "rep.IPr", 
   ##  "unique", 
   ##
-  "unique.IPv4", ## "unique.IPv4r",
-  "unique.IPv6", ## "unique.IPv6r",
-  "unique.IP", ##, "unique.IPv6r",
+  "unique.IPv4", ## 
+  "unique.IPv4r",
+  "unique.IPv6", ## 
+  "unique.IPv6r",
+  "unique.IP", ##, "unique.IPvr",
   ##
   "ipv4.netmask",
   "ipv4.hostmask",
@@ -70,17 +88,21 @@ export(
   "ipv4.addr.space", "ipv6.addr.space",
   "ipv4.reserved", "ipv6.reserved",
   "ipv4.recovered"
+  , "ipv6.unicast"
   ##
 #   , '%>>%'
 #   , '%<<%'
   ##
-  , 'host'
+  , 'getIdx'
+  ##, 'host'
   , 'localhost.ip'
   ##
   , 'whois'
   ## rdap
   ##
   , 'fqdn', 'is.fqdn'
+  ##
+  , "toIdna" , "fromIdna"
 )
 ##
 exportClasses(
@@ -134,6 +156,7 @@ exportMethods(
     ## Summary
     ##
     "is.na",
+    "anyNA",
     "is.numeric",
     ##
     "coerce",
@@ -152,16 +175,15 @@ exportMethods(
     "ip.order",
     "ip.index",
     ##
-     "host.info"
-    ##, "host"
+    "ip.union",
+    "ip.intersect",
+    "ip.setequal",
+    "ip.setdiff",
+    "ip.symdiff",
+    ##
+    "host", "host.info"
+    ##
 )
-##
-## 
-##
-S3method(c, IPv4)
-S3method(c, IPv4r)
-S3method(c, IPv6)
-S3method(c, IPv6r)
 ##
 ## 
 ##
@@ -173,6 +195,7 @@ S3method(names, IPv6)
 S3method(names, IPv6r)
 S3method(names, IP)
 S3method(names, IPr)
+S3method(names, host)
 ##
 S3method('names<-', IPv4)
 S3method('names<-', IPv4r)
@@ -187,7 +210,7 @@ S3method(format, IPv4)
 S3method(toString, IPv4)
 ## range.IPv4
 ## min max
-## seq.IPv4r
+## 
 ## 
 S3method(format, IPv4r)
 S3method(toString, IPv4r)
@@ -205,6 +228,9 @@ S3method(toString, IP)
 S3method(format, IPr)
 S3method(toString, IPr)
 ##
+S3method(format, host)
+S3method(toString, host)
+##
 S3method(as.data.frame,IPv4)
 S3method(as.data.frame,IPv4r)
 ##
@@ -214,11 +240,37 @@ S3method(as.data.frame,IPv6r)
 S3method(as.data.frame,IP)
 S3method(as.data.frame,IPr)
 ##
+## S3method(as.list.IPv4)
+## 
+##
+S3method(c, IPv4)
+S3method(c, IPv4r)
+S3method(c, IPv6)
+S3method(c, IPv6r)
+S3method(c, IP)
+S3method(c, IPr)
+##
+## 
+##
+S3method(rep, IPv4)
+S3method(rep, IPv4r)
+S3method(rep, IPv6)
+S3method(rep, IPv6r)
+S3method(rep, IP)
+S3method(rep, IPr)
+##
+##
+##
+S3method(seq, IPv4r)
+S3method(seq, IPv6r)
+##
+##
 ##
 S3method(unique, IPv4)
 S3method(unique, IPv4r)
 ##
 S3method(unique, IPv6)
+S3method(unique, IPv6r)
 ##
 S3method(unique, IP)
-## S3method(unique, IPr)
+S3method(unique, IPr)
