@@ -2301,7 +2301,8 @@ ___RIP_inline int
    
   int m=-1, nprobes=0;
    
-  uint64_t ip = *(uint64_t*)ip0;
+  uint64_t ip;
+  memcpy(&ip, ip0, sizeof(ip));
 
   int      *htb       = hip->h.htb;
   int      *iptb_idx  = hip->h.iptb_idx;
