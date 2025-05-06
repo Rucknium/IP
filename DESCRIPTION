@@ -24,6 +24,9 @@ SystemRequirements: libidn: libidn11-dev (deb)
 NeedsCompilation: yes
 Depends: R (>= 4.1.0), methods
 Imports: stringi
-Suggests: knitr
+Suggests:
+    knitr,
+    rmarkdown,
+    markdown
 VignetteBuilder: knitr
 Encoding: UTF-8
